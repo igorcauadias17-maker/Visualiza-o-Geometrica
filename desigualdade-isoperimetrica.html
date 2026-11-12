@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Desigualdade Isoperimétrica | Visualização em Geometria Diferencial</title>
+
+  <!-- MathJax: renderiza as fórmulas LaTeX -->
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+        tags: 'none'
+      }
+    };
+  </script>
+  <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+  <style>
+    :root {
+      color-scheme: dark;
+      font-family: "Segoe UI", Arial, sans-serif;
+      color: #e8f1ff;
+      background: #071a35;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      background:
+        radial-gradient(ellipse at 15% 0%, #123568 0, transparent 45%),
+        linear-gradient(145deg, #071a35, #0a2347 60%, #071a35);
+      line-height: 1.6;
+    }
+
+    .math-background {
+      position: fixed;
+      z-index: 0;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+      color: #75a9ed;
+      opacity: 0.48;
+      user-select: none;
+    }
+
+    .math-background span {
+      position: absolute;
+      white-space: nowrap;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(1rem, 2vw, 1.8rem);
+    }
+
+    .formula-one {
+      top: 16%;
+      left: 5%;
+      transform: rotate(-12deg);
+    }
+
+    .formula-two {
+      top: 31%;
+      right: 4%;
+      transform: rotate(9deg);
+    }
+
+    .formula-three {
+      bottom: 24%;
+      left: 8%;
+      transform: rotate(7deg);
+    }
+
+    .math-background .formula-four {
+      right: 8%;
+      bottom: 9%;
+      transform: rotate(-8deg);
+      font-size: clamp(0.7rem, 1.2vw, 1.15rem);
+    }
+
+    body > h1,
+    body > p,
+    header,
+    nav,
+    main,
+    footer {
+      position: relative;
+      z-index: 1;
+    }
+
+    body > h1,
+    body > p,
+    header,
+    nav,
+    main,
+    footer {
+      width: min(900px, calc(100% - 2rem));
+      margin-right: auto;
+      margin-left: auto;
+    }
+
+    body > h1 {
+      margin-top: 3rem;
+      margin-bottom: 0.5rem;
+      color: #f4f8ff;
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      line-height: 1.15;
+    }
+
+    body > p {
+      margin-top: 0;
+      margin-bottom: 2rem;
+      color: #bdd0ec;
+    }
+
+    header {
+      padding: 1rem 1.5rem;
+      border: 1px solid #456ca4;
+      border-radius: 14px 14px 0 0;
+      background: #102d56;
+      color: #c5dcff;
+      font-size: 1.1rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+    }
+
+    header p {
+      margin: 0;
+    }
+
+    nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      padding: 0.75rem 1rem;
+      border-right: 1px solid #456ca4;
+      border-left: 1px solid #456ca4;
+      background: #0c2446;
+    }
+
+    nav a {
+      padding: 0.45rem 0.75rem;
+      border-radius: 7px;
+      color: #c9ddfa;
+      text-decoration: none;
+    }
+
+    nav a:hover,
+    nav a:focus-visible {
+      outline: none;
+      background: #1b4070;
+      color: #fff;
+    }
+
+    main {
+      padding: 0.5rem 1.5rem 1.25rem;
+      border: 1px solid #456ca4;
+      border-top: 0;
+      border-radius: 0 0 14px 14px;
+      background: rgb(9 29 57 / 76%);
+    }
+
+    section {
+      padding: 1rem 0;
+      border-bottom: 1px solid rgb(117 169 237 / 20%);
+    }
+
+    section:last-child {
+      border-bottom: 0;
+    }
+
+    h2 {
+      margin: 0 0 0.6rem;
+      color: #a9ccff;
+      font-size: 1.35rem;
+    }
+
+    h4 {
+      margin: 1.4rem 0 0.4rem;
+      color: #c5dcff;
+      font-size: 1.05rem;
+    }
+
+    section p {
+      margin: 0 0 0.9rem;
+      color: #d1def1;
+    }
+
+    ul, ol {
+      margin: 0.4rem 0;
+      padding-left: 1.4rem;
+    }
+
+    /* Blocos de definição, teorema, exemplo... */
+    .bloco {
+      margin: 1rem 0;
+      padding: 0.9rem 1.1rem;
+      border: 1px solid #456ca4;
+      border-left: 4px solid #75a9ed;
+      border-radius: 10px;
+      background: #0c2446;
+      color: #d1def1;
+    }
+
+    .bloco .titulo {
+      color: #c5dcff;
+      font-weight: 700;
+    }
+
+    .bloco.teorema,
+    .bloco.proposicao {
+      border-left-color: #a9ccff;
+      font-style: italic;
+    }
+
+    .bloco.teorema .titulo,
+    .bloco.proposicao .titulo {
+      font-style: normal;
+    }
+
+    .bloco.observacao {
+      border-left-color: #6f87a8;
+      background: #0a1f3d;
+    }
+
+    .prova {
+      margin: 0.6rem 0 1.2rem 1rem;
+      padding-left: 1rem;
+      border-left: 2px solid rgb(117 169 237 / 30%);
+      color: #d1def1;
+    }
+
+    .prova .rotulo {
+      color: #bdd0ec;
+      font-style: italic;
+    }
+
+    .qed {
+      float: right;
+      color: #9bb4d7;
+    }
+
+    /* Figuras */
+    figure.figura {
+      margin: 1.4rem 0;
+      padding: 1rem;
+      border: 1px solid #456ca4;
+      border-radius: 10px;
+      background: #0c2446;
+      text-align: center;
+    }
+
+    figure.figura svg {
+      display: block;
+      width: 100%;
+      max-width: 440px;
+      height: auto;
+      margin: 0 auto;
+    }
+
+    figure.figura figcaption {
+      margin-top: 0.7rem;
+      color: #bdd0ec;
+      font-size: 0.92rem;
+      text-align: left;
+      line-height: 1.5;
+    }
+
+    figure.figura figcaption strong {
+      color: #c5dcff;
+    }
+
+    /* Estilo dos desenhos em SVG */
+    svg .txt {
+      font-family: Georgia, "Times New Roman", serif;
+      font-style: italic;
+      font-size: 15px;
+      fill: #d1def1;
+    }
+    svg .txt-azul { fill: #8db6ff; }
+    svg .txt-verm { fill: #ff9a9a; }
+    svg .halo {
+      paint-order: stroke;
+      stroke: #0c2446;
+      stroke-width: 4px;
+      stroke-linejoin: round;
+    }
+    svg .reta   { stroke: #c9ddfa; stroke-width: 1.8; fill: none; }
+    svg .eixo   { stroke: #6f87a8; stroke-width: 1.2; fill: none; }
+    svg .curva  { stroke: #75a9ed; stroke-width: 2.4; fill: none; }
+    svg .circ   { stroke: #ff8a8a; stroke-width: 2.2; fill: none; }
+    svg .trac   { stroke: #d1def1; stroke-width: 1.3; stroke-dasharray: 5 4; fill: none; }
+    svg .trac-c { stroke: #6f87a8; stroke-width: 1.2; stroke-dasharray: 5 4; fill: none; }
+
+    mjx-container[display="true"] {
+      overflow-x: auto;
+      overflow-y: hidden;
+    }
+
+    footer {
+      padding: 1.5rem 0 2rem;
+      color: #9bb4d7;
+      text-align: center;
+    }
+
+    footer p {
+      margin: 0;
+    }
+
+    @media (max-width: 600px) {
+      body > h1 {
+        margin-top: 2rem;
+      }
+
+      main {
+        padding-right: 1rem;
+        padding-left: 1rem;
+      }
+
+      .prova {
+        margin-left: 0;
+      }
+
+      .math-background {
+        opacity: 0.28;
+      }
+    }
+  </style>
+
+  <style>
+    /* ===== Tema claro (fundo branco) ===== */
+    :root { color-scheme: light; color: #1d2433; background: #ffffff; }
+    body { background: #ffffff; color: #1d2433; }
+    .math-background { color: #8fb0dc; opacity: 0.30; }
+    body > h1 { color: #14305a; }
+    body > p { color: #4a5a73; }
+    header { background: #eaf1fb; border-color: #b9c9e0; color: #1f4e8c; }
+    nav { background: #f4f7fc; border-color: #b9c9e0; }
+    nav a { color: #1f4e8c; }
+    nav a:hover, nav a:focus-visible { background: #dce8f8; color: #0d2a52; }
+    main { background: #ffffff; border-color: #b9c9e0; }
+    section { border-bottom-color: #dbe4f2; }
+    h2 { color: #1f4e8c; }
+    h4 { color: #2a4d80; }
+    section p { color: #1d2433; }
+    .bloco { background: #f4f7fc; border-color: #c5d3ea; border-left-color: #1f4e8c; color: #1d2433; }
+    .bloco .titulo { color: #1f4e8c; }
+    .bloco.teorema, .bloco.proposicao { border-left-color: #0d2a52; }
+    .bloco.observacao { background: #f7f7f9; border-left-color: #8a96a8; }
+    .prova { border-left-color: #b9c9e0; color: #1d2433; }
+    .prova .rotulo { color: #4a5a73; }
+    .qed { color: #4a5a73; }
+    figure.figura { background: #ffffff; border-color: #c5d3ea; }
+    figure.figura figcaption { color: #4a5a73; }
+    figure.figura figcaption strong { color: #1f4e8c; }
+    footer { color: #6b7a92; }
+
+    /* Desenhos em SVG */
+    svg .txt { fill: #1d2433; }
+    svg .txt-azul { fill: #1f4e8c; }
+    svg .txt-verm { fill: #b3261e; }
+    svg .halo { stroke: #ffffff; }
+    svg .reta  { stroke: #2b3547; }
+    svg .eixo  { stroke: #8a96a8; }
+    svg .curva { stroke: #1f4e8c; }
+    svg .circ  { stroke: #c0392b; }
+    svg .trac  { stroke: #2b3547; }
+    svg .trac-c{ stroke: #8a96a8; }
+    svg path.curva[fill^="rgba"] { fill: rgba(31,78,140,0.10); }
+    svg circle[fill="#e8f1ff"] { fill: #1d2433; }
+    svg circle[fill="#75a9ed"], svg polygon[fill="#75a9ed"] { fill: #1f4e8c; }
+    svg circle[fill="#ff8a8a"] { fill: #c0392b; }
+    svg polygon[fill="#6f87a8"] { fill: #8a96a8; }
+    svg line[stroke="#ff9a9a"] { stroke: #b3261e; }
+    svg marker path { fill: #b3261e; }
+  </style>
+</head>
+<body>
+
+  <div class="math-background" aria-hidden="true">
+    <span class="formula-one">ℓ² ≥ 4πA</span>
+    <span class="formula-two">A = ∮ x dy = −∮ y dx</span>
+    <span class="formula-three">A + πr² ≤ ℓ r</span>
+    <span class="formula-four">√A · √(πr²) ≤ (A + πr²) / 2</span>
+  </div>
+
+  <h1>Desigualdade Isoperimétrica</h1>
+  <p>Demonstração de E. Schmidt, segundo M. P. do Carmo, <em>Geometria Diferencial de Curvas e Superfícies</em>.</p>
+
+  <header>
+    <p>Tópico 3 · Uma Jornada pela Matemática</p>
+  </header>
+
+  <main>
+
+    <!-- ===================== SEÇÃO 1 ===================== -->
+    <section id="enunciado">
+      <h2>1. Enunciado e preliminares</h2>
+
+      <p>Nesta página, “curva” significa uma curva plana, fechada, simples e regular. Seja $C$ uma tal curva, de comprimento $\ell$, e seja $A$ a área da região do plano limitada por $C$ (esta região existe e é única pelo teorema da curva de Jordan).</p>
+
+      <!-- Figura 1 -->
+      <figure class="figura">
+        <svg viewBox="0 0 330 270" role="img" aria-label="Curva fechada simples C de comprimento ℓ que limita uma região de área A">
+          <path d="M20,135 C20,215 80,255 150,245 C230,235 260,165 235,95 C210,25 120,5 65,35 C20,60 20,95 20,135 Z"
+                fill="rgba(117,169,237,0.16)" class="curva"/>
+          <text class="txt" x="128" y="140">A</text>
+          <text class="txt txt-azul" x="268" y="52">C</text>
+          <text class="txt txt-azul" x="268" y="92">ℓ</text>
+        </svg>
+        <figcaption><strong>Figura 1.</strong> Uma curva fechada simples $C$ de comprimento $\ell$ que limita uma região de área $A$.</figcaption>
+      </figure>
+
+      <div class="bloco teorema">
+        <span class="titulo">Teorema 1.1 (Desigualdade isoperimétrica).</span>
+        Seja $C$ uma curva plana fechada simples de comprimento $\ell$ e seja $A$ a área da região limitada por $C$. Então
+        $$\ell^{2}\ \ge\ 4\pi A,$$
+        e vale a igualdade se, e somente se, $C$ é um círculo.
+      </div>
+
+      <p>Antes da demonstração, recordamos a fórmula que permite calcular a área a partir da curva.</p>
+
+      <div class="bloco teorema">
+        <span class="titulo">Teorema 1.2 (Green).</span>
+        Seja $\alpha(s)=(x(s),y(s))$, $s\in[0,\ell]$, uma parametrização de $C$ pelo comprimento de arco, orientada positivamente (isto é, com a região no lado esquerdo, sentido anti-horário). Então
+        $$A=\int_0^{\ell}x(s)\,y'(s)\,ds=-\int_0^{\ell}y(s)\,x'(s)\,ds .$$
+      </div>
+
+      <p>Essas duas expressões vêm do teorema de Green aplicado aos campos $(0,x)$ e $(-y,0)$, cujos rotacionais valem $1$. Em particular, para um círculo de raio $r$ percorrido no sentido anti-horário, obtemos a área $\pi r^{2}$.</p>
+    </section>
+
+    <!-- ===================== SEÇÃO 2 ===================== -->
+    <section id="demonstracao">
+      <h2>2. A demonstração</h2>
+
+      <h4>Passo 1: as duas retas tangentes.</h4>
+      <p>Escolhemos duas retas paralelas $L_1$ e $L_2$, ambas tangentes a $C$, de modo que a curva fique inteiramente contida na faixa entre elas. (Basta fixar uma direção e tomar as duas retas de apoio de $C$ nessa direção; a compacidade de $C$ garante que elas existem.) Seja $2r$ a distância entre $L_1$ e $L_2$.</p>
+
+      <p>Tomamos um sistema de coordenadas em que $L_1$ e $L_2$ são as retas verticais $x=-r$ e $x=r$, e consideramos o círculo $S^1$ de raio $r$ com centro na origem $O$, que é tangente a $L_1$ e a $L_2$. Sejam $p\in L_1\cap C$ e $q\in L_2\cap C$ os pontos de tangência.</p>
+
+      <h4>Passo 2: a parametrização.</h4>
+      <p>Parametrizamos $C$ pelo comprimento de arco, no sentido anti-horário,
+      $$\alpha(s)=(x(s),y(s)),\qquad s\in[0,\ell],$$
+      com $\alpha(0)=p$ e $\alpha(s_1)=q$ para algum $s_1\in(0,\ell)$. Em $[0,s_1]$ a curva percorre o arco inferior de $p$ a $q$, e em $[s_1,\ell]$ o arco superior de $q$ de volta a $p$. Como $C$ está na faixa, $-r\le x(s)\le r$ para todo $s$.</p>
+
+      <p>Definimos agora, sobre o círculo, uma curva $\beta(s)=(x(s),\bar y(s))$ com a <em>mesma abscissa</em> $x(s)$:
+      $$\bar y(s)=\begin{cases}
+      -\sqrt{r^{2}-x(s)^{2}}, & s\in[0,s_1],\\[2pt]
+      +\sqrt{r^{2}-x(s)^{2}}, & s\in[s_1,\ell].
+      \end{cases}$$
+      Assim, $\beta(s)$ é o ponto da metade inferior (respectivamente superior) de $S^1$ que está na mesma vertical que $\alpha(s)$, e $x(s)^2+\bar y(s)^2=r^2$.</p>
+
+      <!-- Figura 2 -->
+      <figure class="figura">
+        <svg viewBox="0 0 420 400" role="img" aria-label="A curva C entre as tangentes paralelas L1 e L2, o círculo S1 de raio r, e os pontos alfa(s) e beta(s) com a mesma abscissa">
+          <!-- retas tangentes L1 e L2 -->
+          <line class="reta" x1="112" y1="379" x2="112" y2="27"/>
+          <line class="reta" x1="288" y1="379" x2="288" y2="27"/>
+          <text class="txt" x="106" y="20">L₁</text>
+          <text class="txt" x="282" y="20">L₂</text>
+
+          <!-- eixos -->
+          <line class="eixo" x1="59" y1="190" x2="372" y2="190"/>
+          <polygon points="372,190 363,186 363,194" fill="#6f87a8"/>
+          <text class="txt" x="378" y="195">x</text>
+          <line class="eixo" x1="200" y1="357" x2="200" y2="22"/>
+          <polygon points="200,18 196,27 204,27" fill="#6f87a8"/>
+          <text class="txt" x="207" y="18">y</text>
+
+          <!-- círculo S1 -->
+          <circle class="circ" cx="200" cy="190" r="88"/>
+          <text class="txt txt-verm" x="146" y="238">S¹</text>
+
+          <!-- curva C: arco inferior e superior -->
+          <path class="curva" d="M112,163.6 C112,260.4 147.2,317.6 208.8,317.6 C261.6,317.6 288,256 288,181.2"/>
+          <path class="curva" d="M288,181.2 C288,106.4 261.6,58 191.2,58 C129.6,58 112,102 112,163.6"/>
+          <!-- setas de orientação (anti-horário) -->
+          <polygon points="8,0 -6,-5 -6,5" fill="#75a9ed" transform="translate(268.2,277.5) rotate(-61.9)"/>
+          <polygon points="8,0 -6,-5 -6,5" fill="#75a9ed" transform="translate(266,91.6) rotate(-125.7)"/>
+          <text class="txt txt-azul" x="296" y="74">C</text>
+
+          <!-- pontos de tangência -->
+          <circle cx="112" cy="163.6" r="3.5" fill="#e8f1ff"/>
+          <text class="txt halo" x="104" y="154" text-anchor="end">p = α(0)</text>
+          <circle cx="288" cy="181.2" r="3.5" fill="#e8f1ff"/>
+          <text class="txt halo" x="296" y="205">q = α(s₁)</text>
+
+          <!-- alpha(s) e beta(s) com a mesma abscissa -->
+          <line class="trac" x1="208.8" y1="317.6" x2="208.8" y2="277.6"/>
+          <circle cx="208.8" cy="317.6" r="3.5" fill="#75a9ed"/>
+          <text class="txt txt-azul halo" x="209" y="338" text-anchor="middle">α(s) = (x, y)</text>
+          <circle cx="208.8" cy="277.6" r="3.5" fill="#ff8a8a"/>
+          <text class="txt txt-verm halo" x="216" y="272">β(s) = (x, ȳ)</text>
+
+          <!-- origem -->
+          <text class="txt" x="190" y="206" text-anchor="end">O</text>
+
+          <!-- largura 2r -->
+          <line class="eixo" x1="112" y1="366" x2="288" y2="366"/>
+          <polygon points="112,366 121,362 121,370" fill="#6f87a8"/>
+          <polygon points="288,366 279,362 279,370" fill="#6f87a8"/>
+          <text class="txt" x="200" y="387" text-anchor="middle">2r</text>
+        </svg>
+        <figcaption><strong>Figura 2.</strong> A curva $C$ entre as tangentes paralelas $L_1$ e $L_2$ (a uma distância $2r$), o círculo $S^1$ de raio $r$, e os pontos $\alpha(s)\in C$ e $\beta(s)\in S^1$ com a mesma abscissa $x(s)$. As setas indicam o sentido anti-horário: o arco inferior corresponde a $s\in[0,s_1]$ e o superior a $s\in[s_1,\ell]$.</figcaption>
+      </figure>
+
+      <h4>Passo 3: as áreas.</h4>
+      <p>Pelo teorema de Green,
+      $$A=\int_0^{\ell}x\,y'\,ds .$$
+      Para a área do círculo, observe que $\bar y$ depende de $s$ apenas através de $x(s)$. Logo, em cada intervalo, a integral se reduz a uma integral em $x$:
+      $$\int_0^{s_1}\bar y\,x'\,ds=\int_{-r}^{r}\!\left(-\sqrt{r^2-x^2}\right)dx=-\frac{\pi r^2}{2},
+      \qquad
+      \int_{s_1}^{\ell}\bar y\,x'\,ds=\int_{r}^{-r}\!\sqrt{r^2-x^2}\,dx=-\frac{\pi r^2}{2},$$
+      e portanto
+      $$\pi r^{2}=-\int_0^{\ell}\bar y\,x'\,ds .$$
+      Somando as duas expressões,
+      $$A+\pi r^{2}=\int_0^{\ell}\bigl(x\,y'-\bar y\,x'\bigr)\,ds .\tag{1}$$</p>
+
+      <h4>Passo 4: Cauchy–Schwarz.</h4>
+      <p>O integrando de (1) é o produto interno de $(x,\bar y)$ com $(y',-x')$. Pela desigualdade de Cauchy–Schwarz,
+      $$x\,y'-\bar y\,x'\ \le\ \sqrt{x^{2}+\bar y^{2}}\;\sqrt{x'^{2}+y'^{2}}=r\cdot 1=r,$$
+      pois $x^2+\bar y^2=r^2$ e $\left|\alpha'\right|=1$. Integrando de $0$ a $\ell$,
+      $$A+\pi r^{2}\ \le\ \ell\,r .\tag{2}$$</p>
+
+      <h4>Passo 5: média aritmética e média geométrica.</h4>
+      <p>Como a média geométrica de dois números positivos não excede a aritmética,
+      $$\sqrt{A}\,\sqrt{\pi r^{2}}\ \le\ \frac{A+\pi r^{2}}{2}\ \le\ \frac{\ell\,r}{2},$$
+      onde a segunda desigualdade é (2). Dividindo por $r>0$ obtemos $\sqrt{\pi A}\le \ell/2$, isto é,
+      $$\boxed{\ \ell^{2}\ \ge\ 4\pi A\ }$$
+      Isto prova a desigualdade.</p>
+    </section>
+
+    <!-- ===================== SEÇÃO 3 ===================== -->
+    <section id="igualdade">
+      <h2>3. O caso de igualdade</h2>
+
+      <p>Suponha agora $\ell^{2}=4\pi A$. Então todas as desigualdades do Passo 4 e do Passo 5 são igualdades. Isto traz as consequências a seguir.</p>
+
+      <h4>(a) $A=\pi r^{2}$.</h4>
+      <p>A igualdade na desigualdade entre as médias aritmética e geométrica ocorre se, e somente se, $A=\pi r^{2}$.</p>
+
+      <h4>(b) $x=r\,y'$.</h4>
+      <p>Em (2) vale a igualdade das integrais; como os integrandos são contínuos e $x y'-\bar y x'\le r$ em todo ponto, devemos ter $x y'-\bar y x'=r$ para todo $s$. Isto é, o produto interno de $(x,\bar y)$ com $(y',-x')$ é igual ao produto das normas $r\cdot 1$; logo os dois vetores têm a mesma direção e o mesmo sentido, e como $\left|(x,\bar y)\right|=r$ e $\left|(y',-x')\right|=1$,
+      $$(x,\bar y)=r\,(y',-x') .$$
+      Em particular,
+      $$x=r\,y' .\tag{3}$$</p>
+
+      <h4>(c) Trocando os papéis de $x$ e $y$.</h4>
+      <p>O argumento acima vale para qualquer direção das retas tangentes paralelas. Repetimos então com as retas $L_1'$ e $L_2'$ <em>horizontais</em>, tangentes a $C$ e perpendiculares a $L_1,L_2$ (veja a Figura 3), a uma distância $2r'$ uma da outra. Isto equivale a girar o sistema de coordenadas de $90^\circ$, trocando $(x,y)$ por $(y,-x)$, e dá, no lugar de (3),
+      $$y=-r'\,x' .$$
+      Aqui $r'$ é a metade da distância entre as novas tangentes, e a parte (a), aplicada a esta situação, dá $A=\pi r'^{2}$. Como também $A=\pi r^2$, resulta $r'=r$. Observe que, no primeiro caso, só a posição da origem ao longo do eixo $x$ importa (ela deve ficar na reta equidistante de $L_1$ e $L_2$), e, no segundo, só a posição ao longo do eixo $y$; por isso podemos usar a mesma origem $O$, a interseção das duas retas equidistantes, nos dois casos. Assim,
+      $$y=-r\,x' .\tag{4}$$</p>
+
+      <h4>(d) Conclusão.</h4>
+      <p>Elevando ao quadrado (3) e (4) e somando,
+      $$x^{2}+y^{2}=r^{2}\,\bigl(y'^{2}+x'^{2}\bigr)=r^{2}.$$
+      Logo $C$ está contida no círculo de raio $r$ centrado em $O$. Além disso, $\ell^2=4\pi A=4\pi^2r^2$ dá $\ell=2\pi r$, o comprimento do círculo; como $\alpha$ tem velocidade unitária e $C$ é simples, $C$ percorre o círculo exatamente uma vez. Portanto $C$ é o círculo de raio $r$.</p>
+
+      <!-- Figura 3 -->
+      <figure class="figura">
+        <svg viewBox="0 0 350 330" role="img" aria-label="O círculo de raio r inscrito no quadrado formado por dois pares de tangentes perpendiculares">
+          <defs>
+            <marker id="seta-verm" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0,0 L10,5 L0,10 z" fill="#ff9a9a"/>
+            </marker>
+          </defs>
+
+          <!-- retas tangentes -->
+          <line class="reta" x1="74"  y1="300" x2="74"  y2="40"/>
+          <line class="reta" x1="266" y1="300" x2="266" y2="40"/>
+          <line class="reta" x1="40"  y1="266" x2="300" y2="266"/>
+          <line class="reta" x1="40"  y1="74"  x2="300" y2="74"/>
+          <text class="txt" x="68"  y="32">L₁</text>
+          <text class="txt" x="260" y="32">L₂</text>
+          <text class="txt" x="306" y="271">L₁′</text>
+          <text class="txt" x="306" y="79">L₂′</text>
+
+          <!-- eixos -->
+          <line class="eixo" x1="26" y1="170" x2="324" y2="170"/>
+          <polygon points="324,170 315,166 315,174" fill="#6f87a8"/>
+          <text class="txt" x="330" y="175">x</text>
+          <line class="eixo" x1="170" y1="314" x2="170" y2="14"/>
+          <polygon points="170,11 166,20 174,20" fill="#6f87a8"/>
+          <text class="txt" x="177" y="14">y</text>
+
+          <!-- círculo C -->
+          <circle class="curva" cx="170" cy="170" r="96"/>
+          <text class="txt txt-azul" x="88" y="246">C</text>
+
+          <!-- ponto, tangente e projeção -->
+          <line class="trac-c" x1="170" y1="170" x2="260.2" y2="137.2"/>
+          <line class="trac" x1="260.2" y1="137.2" x2="260.2" y2="170"/>
+          <line x1="260.2" y1="137.2" x2="247" y2="100.5" stroke="#ff9a9a" stroke-width="2.4" marker-end="url(#seta-verm)"/>
+          <circle cx="260.2" cy="137.2" r="3.5" fill="#e8f1ff"/>
+          <text class="txt halo" x="267" y="142">α(s)</text>
+          <text class="txt txt-verm halo" x="252" y="92">α′(s)</text>
+          <text class="txt" x="260" y="188" text-anchor="middle">x</text>
+          <text class="txt" x="162" y="188" text-anchor="end">O</text>
+        </svg>
+        <figcaption><strong>Figura 3.</strong> O caso de igualdade: $C$ é o círculo de raio $r$ inscrito no quadrado formado pelos dois pares de tangentes perpendiculares $L_1,L_2$ e $L_1',L_2'$. Se $\alpha(s)=r(\cos\theta,\sin\theta)$ com $s=r\theta$, então $\alpha'(s)=(-\sin\theta,\cos\theta)$, e de fato $x=r\,y'$ e $y=-r\,x'$.</figcaption>
+      </figure>
+
+      <p>Reciprocamente, se $C$ é um círculo de raio $r$, então $\ell=2\pi r$ e $A=\pi r^{2}$, de modo que $\ell^{2}=4\pi^{2}r^{2}=4\pi A$. Isto completa a demonstração do Teorema 1.1. <span class="qed">∎</span></p>
+
+      <div class="bloco observacao">
+        <span class="titulo">Observação.</span>
+        A ideia de Schmidt é comparar $C$ com um círculo de raio $r$ <em>usando a mesma abscissa</em> $x(s)$, o que permite exprimir $A+\pi r^2$ como uma única integral ao longo de $C$ e aplicar Cauchy–Schwarz. A escolha das tangentes paralelas é o que garante que $\left|x\right|\le r$, de modo que $\bar y$ esteja bem definida.
+      </div>
+    </section>
+
+    <section id="referencias">
+      <h2>Referências</h2>
+      <ol>
+        <li>M. P. do Carmo, <em>Geometria Diferencial de Curvas e Superfícies</em>, Coleção Textos Universitários, SBM, Capítulo 1 (seção sobre a desigualdade isoperimétrica).</li>
+      </ol>
+    </section>
+
+  </main>
+
+  <footer>
+    <p>Blog de Iniciação Científica</p>
+  </footer>
+
+</body>
+</html>

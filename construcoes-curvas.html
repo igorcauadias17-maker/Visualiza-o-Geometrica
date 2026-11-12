@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Visualizações interativas de curvas espaciais em R³: hélice circular, curva de Viviani, nó trevo, ciclóide, catenária e curva de Lissajous.">
+  <title>Construções de Curvas em R³ | Geometria Diferencial</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      font-family: "Segoe UI", Arial, sans-serif;
+      color: #e8f1ff;
+      background: #071a35;
+      --line: #456ca4;
+      --muted: #bdd0ec;
+      --accent: #a9ccff;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      min-height: 100vh;
+      margin: 0;
+      background: radial-gradient(ellipse at 15% 0%, #123568 0, transparent 45%),
+                  linear-gradient(145deg, #071a35, #0a2347 60%, #071a35);
+      line-height: 1.6;
+    }
+    main { width: min(960px, calc(100% - 2rem)); margin: 0 auto; padding: 2rem 0 3rem; }
+    a { color: #c9ddfa; text-underline-offset: 3px; }
+    a:focus-visible { outline: 2px solid #75a9ed; outline-offset: 4px; border-radius: 2px; }
+    .voltar { display: inline-block; margin-bottom: 1.2rem; }
+    h1 { margin: 0; color: #f4f8ff; font-size: clamp(2rem, 5vw, 3rem); line-height: 1.15; }
+    .introducao { margin: .8rem 0 1.5rem; color: var(--muted); }
+    .atalhos { display: flex; flex-wrap: wrap; gap: .6rem 1.2rem; margin-bottom: 1.5rem; }
+    .grupo-titulo { margin: 2rem 0 .6rem; color: #f4f8ff; font-size: 1.55rem; }
+    .grupo-descricao { margin: 0 0 .8rem; color: var(--muted); }
+    .curva { margin-top: 1rem; overflow: hidden; border: 1px solid var(--line); border-radius: 14px; background: rgb(9 29 57 / 85%); scroll-margin-top: 1rem; }
+    .curva-conteudo { display: grid; grid-template-columns: minmax(0, 1fr) minmax(260px, .8fr); align-items: center; gap: 1.2rem; padding: 1.2rem; }
+    .controles { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 1rem; padding: 0 1.2rem 1.2rem; }
+    .botoes { display: flex; flex-wrap: wrap; gap: .5rem; }
+    button { padding: .5rem .8rem; border: 1px solid #6389ba; border-radius: 7px; background: #102d56; color: #e8f1ff; font: inherit; cursor: pointer; }
+    button:hover, button:focus-visible { background: #1b4070; }
+    button:focus-visible { outline: 2px solid #75a9ed; outline-offset: 2px; }
+    .campo-progresso { display: grid; gap: .2rem; }
+    label { display: flex; justify-content: space-between; gap: .8rem; color: #d1def1; font-size: .9rem; }
+    output { color: var(--accent); font-variant-numeric: tabular-nums; }
+    input[type="range"] { width: 100%; accent-color: #75a9ed; cursor: pointer; }
+    h2 { margin: 0 0 .35rem; color: var(--accent); font-size: 1.35rem; }
+    .curva p { margin: 0; color: #d1def1; }
+    .formula { margin-top: .8rem !important; padding: .7rem .8rem; overflow-x: auto; border-radius: 8px; background: #0c2446; color: #c9ddfa !important; font-family: Georgia, "Times New Roman", serif; white-space: nowrap; }
+    .visualizacao-container { position: relative; min-width: 0; width: 100%; }
+    .botao-expandir { position: absolute; z-index: 2; top: .65rem; right: .65rem; padding: .4rem .65rem; border-color: #6389ba; background: rgb(16 45 86 / 94%); font-size: .85rem; box-shadow: 0 2px 10px rgb(0 0 0 / 25%); }
+    svg { display: block; width: 100%; min-height: 230px; border: 1px solid rgb(117 169 237 / 20%); border-radius: 10px; cursor: grab; touch-action: none; background: radial-gradient(ellipse at center, rgb(24 62 108 / 32%), transparent 70%), #081b34; }
+    svg:active { cursor: grabbing; }
+    .visualizacao-container:fullscreen, .visualizacao-container.expandida { display: flex; flex-direction: column; justify-content: center; align-items: stretch; gap: .8rem; width: 100%; height: 100%; min-height: 100vh; padding: 1rem; background: #071a35; }
+    .visualizacao-container:fullscreen svg, .visualizacao-container.expandida svg { flex: 1; width: 100%; height: calc(100vh - 5rem); min-height: 0; border-color: #456ca4; }
+    .visualizacao-container:fullscreen .botao-expandir, .visualizacao-container.expandida .botao-expandir { position: static; align-self: flex-end; order: 2; }
+    .visualizacao-container.expandida { position: fixed; inset: 0; z-index: 9999; }
+    svg path { fill: none; stroke: #75a9ed; stroke-linecap: round; stroke-linejoin: round; stroke-width: 3; }
+    svg .eixo { stroke-width: 1.5; opacity: .85; }
+    svg .eixo-x, svg .rotulo-x { stroke: #ff8a80; fill: #ff8a80; }
+    svg .eixo-y, svg .rotulo-y { stroke: #7ee0b2; fill: #7ee0b2; }
+    svg .eixo-z, svg .rotulo-z { stroke: #ffd166; fill: #ffd166; }
+    svg .rotulo-eixo { font-size: 15px; font-weight: 700; paint-order: stroke; stroke: #081b34; stroke-linejoin: round; stroke-width: 3px; }
+    svg .ponto-atual { fill: #ffb86b; stroke: #081b34; stroke-width: 1.5; }
+    svg text { fill: #bdd0ec; font: 14px "Segoe UI", Arial, sans-serif; }
+    .dica { padding: 0 1.2rem .8rem; color: var(--muted) !important; font-size: .9rem; }
+    @media (max-width: 680px) {
+      main { padding-top: 1.3rem; }
+      .curva-conteudo { grid-template-columns: 1fr; }
+      .controles { grid-template-columns: 1fr; }
+    }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; } }
+  </style>
+</head>
+<body>
+  <main>
+    <a class="voltar" href="visualizacao-geometrica.html">← Voltar às visualizações</a>
+    <h1>Construções de Curvas em R<sup>3</sup></h1>
+    <p class="introducao">Explore curvas espaciais por meio de suas parametrizações. Em cada construção, é possível acompanhar o traçado, controlar seu progresso e girar a perspectiva da representação.</p>
+
+    <nav class="atalhos" aria-label="Construções de curvas">
+      <a href="#helice-circular">Hélice circular</a>
+      <a href="#curva-viviani">Curva de Viviani</a>
+      <a href="#no-trevo">Nó trevo</a>
+      <a href="#cicloide">Ciclóide</a>
+      <a href="#catenaria">Catenária</a>
+      <a href="#lissajous">Lissajous</a>
+    </nav>
+
+    <h2 class="grupo-titulo">Curvas clássicas e curvas espaciais</h2>
+    <p class="grupo-descricao">As construções abaixo apresentam diferentes comportamentos: curvas helicoidais, curvas de interseção, curvas fechadas e curvas planas vistas como curvas em R³.</p>
+
+    <section class="curva" id="helice-circular">
+      <div class="curva-conteudo">
+        <div>
+          <h2>Hélice circular</h2>
+          <p>A projeção da hélice gira em torno do eixo vertical enquanto sua altura cresce uniformemente. Trata-se de um exemplo importante de curva espacial com curvatura e torção constantes.</p>
+          <p class="formula">α(t) = (a cos t, a sin t, b t), &nbsp; 0 ≤ t ≤ 6π</p>
+        </div>
+        <svg id="vista-helice" viewBox="0 0 600 300" role="img" aria-label="Representação tridimensional da hélice circular">
+          <defs>
+            <marker id="seta-helice-x" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L8 4 L0 8 Z" fill="#ff8a80"></path></marker>
+            <marker id="seta-helice-y" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L8 4 L0 8 Z" fill="#7ee0b2"></path></marker>
+            <marker id="seta-helice-z" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L8 4 L0 8 Z" fill="#ffd166"></path></marker>
+          </defs>
+          <path class="eixo eixo-x" id="eixo-helice-x" marker-end="url(#seta-helice-x)"></path><path class="eixo eixo-y" id="eixo-helice-y" marker-end="url(#seta-helice-y)"></path><path class="eixo eixo-z" id="eixo-helice-z" marker-end="url(#seta-helice-z)"></path>
+          <path id="grafico-helice"></path><text class="rotulo-eixo rotulo-x" id="rotulo-helice-x">x</text><text class="rotulo-eixo rotulo-y" id="rotulo-helice-y">y</text><text class="rotulo-eixo rotulo-z" id="rotulo-helice-z">z</text><circle class="ponto-atual" id="ponto-helice" r="5"></circle>
+        </svg>
+      </div>
+      <div class="controles"><div class="botoes"><button id="animar-helice" type="button">Animar construção</button><button id="reiniciar-helice" type="button">Recomeçar</button></div><div class="campo-progresso"><label for="progresso-helice"><span>Curva construída</span><output id="valor-helice" for="progresso-helice">100%</output></label><input id="progresso-helice" type="range" min="0" max="100" value="100"></div></div>
+      <p class="dica">Arraste a figura para girar a perspectiva.</p>
+    </section>
+
+    <section class="curva" id="curva-viviani">
+      <div class="curva-conteudo">
+        <div><h2>Curva de Viviani</h2><p>É a interseção de uma esfera com um cilindro circular tangente à esfera. Sua forma evidencia como uma curva espacial pode surgir da interseção de duas superfícies.</p><p class="formula">γ(t) = (a(1 + cos t), a sin t, 2a sin(t/2)), &nbsp; 0 ≤ t ≤ 2π</p></div>
+        <svg id="vista-viviani" viewBox="0 0 600 300" role="img" aria-label="Representação tridimensional da curva de Viviani">
+          <defs><marker id="seta-viviani-x" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L8 4 L0 8 Z" fill="#ff8a80"></path></marker><marker id="seta-viviani-y" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L8 4 L0 8 Z" fill="#7ee0b2"></path></marker><marker id="seta-viviani-z" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L8 4 L0 8 Z" fill="#ffd166"></path></marker></defs>
+          <path class="eixo eixo-x" id="eixo-viviani-x" marker-end="url(#seta-viviani-x)"></path><path class="eixo eixo-y" id="eixo-viviani-y" marker-end="url(#seta-viviani-y)"></path><path class="eixo eixo-z" id="eixo-viviani-z" marker-end="url(#seta-viviani-z)"></path><path id="grafico-viviani"></path><text class="rotulo-eixo rotulo-x" id="rotulo-viviani-x">x</text><text class="rotulo-eixo rotulo-y" id="rotulo-viviani-y">y</text><text class="rotulo-eixo rotulo-z" id="rotulo-viviani-z">z</text><circle class="ponto-atual" id="ponto-viviani" r="5"></circle>
+        </svg>
+      </div>
+      <div class="controles"><div class="botoes"><button id="animar-viviani" type="button">Animar construção</button><button id="reiniciar-viviani" type="button">Recomeçar</button></div><div class="campo-progresso"><label for="progresso-viviani"><span>Curva construída</span><output id="valor-viviani" for="progresso-viviani">100%</output></label><input id="progresso-viviani" type="range" min="0" max="100" value="100"></div></div>
+      <p class="dica">Arraste a figura para girar a perspectiva.</p>
+    </section>
+
+    <section class="curva" id="no-trevo">
+      <div class="curva-conteudo">
+        <div><h2>Nó trevo</h2><p>O nó trevo é uma curva fechada que se entrelaça no espaço. É um exemplo clássico para visualizar curvas parametrizadas que não são planas.</p><p class="formula">τ(t) = (sin t + 2 sin 2t, cos t − 2 cos 2t, −sin 3t), &nbsp; 0 ≤ t ≤ 2π</p></div>
+        <svg id="vista-trevo" viewBox="0 0 600 300" role="img" aria-label="Representação tridimensional do nó trevo"><defs><marker id="seta-trevo-x" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L8 4 L0 8 Z" fill="#ff8a80"></path></marker><marker id="seta-trevo-y" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L8 4 L0 8 Z" fill="#7ee0b2"></path></marker><marker id="seta-trevo-z" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L8 4 L0 8 Z" fill="#ffd166"></path></marker></defs><path class="eixo eixo-x" id="eixo-trevo-x" marker-end="url(#seta-trevo-x)"></path><path class="eixo eixo-y" id="eixo-trevo-y" marker-end="url(#seta-trevo-y)"></path><path class="eixo eixo-z" id="eixo-trevo-z" marker-end="url(#seta-trevo-z)"></path><path id="grafico-trevo"></path><text class="rotulo-eixo rotulo-x" id="rotulo-trevo-x">x</text><text class="rotulo-eixo rotulo-y" id="rotulo-trevo-y">y</text><text class="rotulo-eixo rotulo-z" id="rotulo-trevo-z">z</text><circle class="ponto-atual" id="ponto-trevo" r="5"></circle></svg>
+      </div>
+      <div class="controles"><div class="botoes"><button id="animar-trevo" type="button">Animar construção</button><button id="reiniciar-trevo" type="button">Recomeçar</button></div><div class="campo-progresso"><label for="progresso-trevo"><span>Curva construída</span><output id="valor-trevo" for="progresso-trevo">100%</output></label><input id="progresso-trevo" type="range" min="0" max="100" value="100"></div></div><p class="dica">Arraste a figura para girar a perspectiva.</p>
+    </section>
+
+    <section class="curva" id="cicloide">
+      <div class="curva-conteudo">
+        <div><h2>Ciclóide</h2><p>A ciclóide plana é traçada por um ponto de uma circunferência que rola sem deslizar sobre uma reta. Aqui ela é representada no espaço, contida no plano xz.</p><p class="formula">c(t) = (t − sen t, 0, 1 − cos t), &nbsp; 0 ≤ t ≤ 4π</p></div>
+        <svg id="vista-cicloide" viewBox="0 0 600 300" role="img" aria-label="Representação tridimensional da ciclóide"><defs><marker id="seta-cicloide-x" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L8 4 L0 8 Z" fill="#ff8a80"></path></marker><marker id="seta-cicloide-y" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L8 4 L0 8 Z" fill="#7ee0b2"></path></marker><marker id="seta-cicloide-z" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L8 4 L0 8 Z" fill="#ffd166"></path></marker></defs><path class="eixo eixo-x" id="eixo-cicloide-x" marker-end="url(#seta-cicloide-x)"></path><path class="eixo eixo-y" id="eixo-cicloide-y" marker-end="url(#seta-cicloide-y)"></path><path class="eixo eixo-z" id="eixo-cicloide-z" marker-end="url(#seta-cicloide-z)"></path><path id="grafico-cicloide"></path><text class="rotulo-eixo rotulo-x" id="rotulo-cicloide-x">x</text><text class="rotulo-eixo rotulo-y" id="rotulo-cicloide-y">y</text><text class="rotulo-eixo rotulo-z" id="rotulo-cicloide-z">z</text><circle class="ponto-atual" id="ponto-cicloide" r="5"></circle></svg>
+      </div>
+      <div class="controles"><div class="botoes"><button id="animar-cicloide" type="button">Animar construção</button><button id="reiniciar-cicloide" type="button">Recomeçar</button></div><div class="campo-progresso"><label for="progresso-cicloide"><span>Curva construída</span><output id="valor-cicloide" for="progresso-cicloide">100%</output></label><input id="progresso-cicloide" type="range" min="0" max="100" value="100"></div></div><p class="dica">Arraste a figura para girar a perspectiva.</p>
+    </section>
+
+    <section class="curva" id="catenaria">
+      <div class="curva-conteudo">
+        <div><h2>Catenária</h2><p>A catenária é a forma assumida por um fio perfeitamente flexível, homogêneo e suspenso apenas pelas extremidades, sob a ação da gravidade. É uma curva plana, apresentada aqui no plano xz.</p><p class="formula">h(t) = (t, 0, cosh t), &nbsp; −1,5 ≤ t ≤ 1,5</p></div>
+        <svg id="vista-catenaria" viewBox="0 0 600 300" role="img" aria-label="Representação tridimensional da catenária"><defs><marker id="seta-catenaria-x" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L8 4 L0 8 Z" fill="#ff8a80"></path></marker><marker id="seta-catenaria-y" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L8 4 L0 8 Z" fill="#7ee0b2"></path></marker><marker id="seta-catenaria-z" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L8 4 L0 8 Z" fill="#ffd166"></path></marker></defs><path class="eixo eixo-x" id="eixo-catenaria-x" marker-end="url(#seta-catenaria-x)"></path><path class="eixo eixo-y" id="eixo-catenaria-y" marker-end="url(#seta-catenaria-y)"></path><path class="eixo eixo-z" id="eixo-catenaria-z" marker-end="url(#seta-catenaria-z)"></path><path id="grafico-catenaria"></path><text class="rotulo-eixo rotulo-x" id="rotulo-catenaria-x">x</text><text class="rotulo-eixo rotulo-y" id="rotulo-catenaria-y">y</text><text class="rotulo-eixo rotulo-z" id="rotulo-catenaria-z">z</text><circle class="ponto-atual" id="ponto-catenaria" r="5"></circle></svg>
+      </div>
+      <div class="controles"><div class="botoes"><button id="animar-catenaria" type="button">Animar construção</button><button id="reiniciar-catenaria" type="button">Recomeçar</button></div><div class="campo-progresso"><label for="progresso-catenaria"><span>Curva construída</span><output id="valor-catenaria" for="progresso-catenaria">100%</output></label><input id="progresso-catenaria" type="range" min="0" max="100" value="100"></div></div><p class="dica">Arraste a figura para girar a perspectiva.</p>
+    </section>
+
+    <section class="curva" id="lissajous">
+      <div class="curva-conteudo">
+        <div><h2>Curva de Lissajous espacial</h2><p>Esta curva é construída combinando movimentos oscilatórios em três direções. A escolha de frequências diferentes produz uma trajetória fechada e visualmente rica.</p><p class="formula">ℓ(t) = (sen 3t, sen 4t, sen 5t), &nbsp; 0 ≤ t ≤ 2π</p></div>
+        <svg id="vista-lissajous" viewBox="0 0 600 300" role="img" aria-label="Representação tridimensional da curva de Lissajous"><defs><marker id="seta-lissajous-x" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L8 4 L0 8 Z" fill="#ff8a80"></path></marker><marker id="seta-lissajous-y" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L8 4 L0 8 Z" fill="#7ee0b2"></path></marker><marker id="seta-lissajous-z" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L8 4 L0 8 Z" fill="#ffd166"></path></marker></defs><path class="eixo eixo-x" id="eixo-lissajous-x" marker-end="url(#seta-lissajous-x)"></path><path class="eixo eixo-y" id="eixo-lissajous-y" marker-end="url(#seta-lissajous-y)"></path><path class="eixo eixo-z" id="eixo-lissajous-z" marker-end="url(#seta-lissajous-z)"></path><path id="grafico-lissajous"></path><text class="rotulo-eixo rotulo-x" id="rotulo-lissajous-x">x</text><text class="rotulo-eixo rotulo-y" id="rotulo-lissajous-y">y</text><text class="rotulo-eixo rotulo-z" id="rotulo-lissajous-z">z</text><circle class="ponto-atual" id="ponto-lissajous" r="5"></circle></svg>
+      </div>
+      <div class="controles"><div class="botoes"><button id="animar-lissajous" type="button">Animar construção</button><button id="reiniciar-lissajous" type="button">Recomeçar</button></div><div class="campo-progresso"><label for="progresso-lissajous"><span>Curva construída</span><output id="valor-lissajous" for="progresso-lissajous">100%</output></label><input id="progresso-lissajous" type="range" min="0" max="100" value="100"></div></div><p class="dica">Arraste a figura para girar a perspectiva.</p>
+    </section>
+  </main>
+
+  <script>
+    const tau = Math.PI * 2;
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+    function createCurve(config) {
+      const svg = document.getElementById(`vista-${config.id}`);
+      const visualizacao = document.createElement("div");
+      visualizacao.className = "visualizacao-container";
+      svg.parentNode.insertBefore(visualizacao, svg);
+      visualizacao.appendChild(svg);
+      const expandButton = document.createElement("button");
+      expandButton.type = "button";
+      expandButton.className = "botao-expandir";
+      expandButton.textContent = "⛶ Expandir tela";
+      expandButton.setAttribute("aria-label", `Expandir visualização da curva ${config.nome || config.id}`);
+      visualizacao.appendChild(expandButton);
+      const path = document.getElementById(`grafico-${config.id}`);
+      const marker = document.getElementById(`ponto-${config.id}`);
+      const progressInput = document.getElementById(`progresso-${config.id}`);
+      const progressOutput = document.getElementById(`valor-${config.id}`);
+      const animateButton = document.getElementById(`animar-${config.id}`);
+      const restartButton = document.getElementById(`reiniciar-${config.id}`);
+      let progress = 1, yaw = -0.55, tilt = -0.72;
+      let isPlaying = false, lastFrame = 0, frameRequest = 0, dragPoint = null;
+
+      async function toggleExpandedView() {
+        try {
+          if (document.fullscreenElement === visualizacao) {
+            await document.exitFullscreen();
+          } else if (document.fullscreenElement) {
+            await document.exitFullscreen();
+            await visualizacao.requestFullscreen();
+          } else if (visualizacao.requestFullscreen) {
+            await visualizacao.requestFullscreen();
+          } else {
+            visualizacao.classList.toggle("expandida");
+          }
+        } catch (error) {
+          visualizacao.classList.toggle("expandida");
+        }
+        updateExpandButton();
+      }
+
+      function updateExpandButton() {
+        const expanded = document.fullscreenElement === visualizacao || visualizacao.classList.contains("expandida");
+        expandButton.textContent = expanded ? "✕ Sair da tela cheia" : "⛶ Expandir tela";
+        expandButton.setAttribute("aria-label", expanded ? "Sair da tela cheia" : `Expandir visualização da curva ${config.nome || config.id}`);
+      }
+      expandButton.addEventListener("click", toggleExpandedView);
+      document.addEventListener("fullscreenchange", updateExpandButton);
+      document.addEventListener("keydown", event => {
+        if (event.key === "Escape" && visualizacao.classList.contains("expandida")) {
+          visualizacao.classList.remove("expandida");
+          updateExpandButton();
+        }
+      });
+
+      function project(x, y, z) {
+        const rotatedX = x * Math.cos(yaw) - y * Math.sin(yaw);
+        const rotatedY = x * Math.sin(yaw) + y * Math.cos(yaw);
+        const vertical = rotatedY * Math.cos(tilt) - z * Math.sin(tilt);
+        const scale = config.scale || 64;
+        return { x: 300 + rotatedX * scale, y: 150 - vertical * scale * 0.72 };
+      }
+
+      function render() {
+        const end = config.start + (config.end - config.start) * progress;
+        const steps = Math.max(1, Math.ceil(config.steps * progress));
+        const points = [];
+        for (let index = 0; index <= steps; index += 1) {
+          const t = config.start + (end - config.start) * index / steps;
+          const point = project(...config.pointAt(t));
+          points.push(`${index === 0 ? "M" : "L"}${point.x.toFixed(2)} ${point.y.toFixed(2)}`);
+        }
+        path.setAttribute("d", points.join(" "));
+        for (const axisName of ["x", "y", "z"]) {
+          const [axisStartCoordinates, axisEndCoordinates] = config.axes[axisName];
+          const axisStart = project(...axisStartCoordinates), axisEnd = project(...axisEndCoordinates);
+          const axisPath = document.getElementById(`eixo-${config.id}-${axisName}`);
+          const axisLabel = document.getElementById(`rotulo-${config.id}-${axisName}`);
+          axisPath.setAttribute("d", `M${axisStart.x.toFixed(2)} ${axisStart.y.toFixed(2)} L${axisEnd.x.toFixed(2)} ${axisEnd.y.toFixed(2)}`);
+          axisLabel.setAttribute("x", (axisEnd.x + 7).toFixed(2));
+          axisLabel.setAttribute("y", (axisEnd.y - 7).toFixed(2));
+        }
+        const currentPoint = project(...config.pointAt(end));
+        marker.setAttribute("cx", currentPoint.x.toFixed(2));
+        marker.setAttribute("cy", currentPoint.y.toFixed(2));
+        marker.style.display = progress > 0 ? "" : "none";
+        progressInput.value = String(Math.round(progress * 100));
+        progressOutput.value = `${Math.round(progress * 100)}%`;
+        progressOutput.textContent = progressOutput.value;
+        animateButton.textContent = isPlaying ? "Pausar" : progress >= 1 ? "Construir novamente" : "Animar construção";
+      }
+
+      function animate(timestamp) {
+        if (!isPlaying) return;
+        if (lastFrame) progress = Math.min(1, progress + (timestamp - lastFrame) / config.duration);
+        lastFrame = timestamp;
+        if (progress >= 1) { isPlaying = false; lastFrame = 0; }
+        render();
+        if (isPlaying) frameRequest = requestAnimationFrame(animate);
+      }
+      function stopAnimation() { isPlaying = false; lastFrame = 0; cancelAnimationFrame(frameRequest); }
+
+      animateButton.addEventListener("click", () => {
+        if (isPlaying) { stopAnimation(); render(); return; }
+        if (progress >= 1) progress = 0;
+        isPlaying = true; lastFrame = 0;
+        if (reducedMotion.matches) { progress = 1; isPlaying = false; render(); }
+        else frameRequest = requestAnimationFrame(animate);
+      });
+      restartButton.addEventListener("click", () => { stopAnimation(); progress = 0; render(); });
+      progressInput.addEventListener("input", () => { stopAnimation(); progress = Number(progressInput.value) / 100; render(); });
+      svg.addEventListener("pointerdown", event => { dragPoint = { x: event.clientX, y: event.clientY }; svg.setPointerCapture(event.pointerId); });
+      svg.addEventListener("pointermove", event => {
+        if (!dragPoint) return;
+        yaw += (event.clientX - dragPoint.x) * 0.008;
+        tilt = Math.max(-1.35, Math.min(0.25, tilt + (event.clientY - dragPoint.y) * 0.006));
+        dragPoint = { x: event.clientX, y: event.clientY }; render();
+      });
+      svg.addEventListener("pointerup", () => { dragPoint = null; });
+      svg.addEventListener("pointercancel", () => { dragPoint = null; });
+      render();
+    }
+
+    const axis = (x, y, z) => ({
+      x: [[-x, 0, 0], [x, 0, 0]],
+      y: [[0, -y, 0], [0, y, 0]],
+      z: [[0, 0, -z], [0, 0, z]]
+    });
+
+    const curves = [
+      { id: "helice", start: 0, end: 6 * Math.PI, steps: 420, duration: 9000, axes: { x: [[-1.7,0,0],[1.7,0,0]], y: [[0,-1.7,0],[0,1.7,0]], z: [[0,0,-.5],[0,0,4.6]] }, pointAt: t => [Math.cos(t), Math.sin(t), .08*t] },
+      { id: "viviani", start: 0, end: tau, steps: 300, duration: 6500, axes: { x: [[-.6,0,0],[2.5,0,0]], y: [[0,-1.5,0],[0,1.5,0]], z: [[0,0,-2.3],[0,0,2.3]] }, pointAt: t => [1+Math.cos(t), Math.sin(t), 2*Math.sin(t/2)] },
+      { id: "trevo", start: 0, end: tau, steps: 420, duration: 7500, scale: 31, axes: axis(3.2,3.2,1.8), pointAt: t => [Math.sin(t)+2*Math.sin(2*t), Math.cos(t)-2*Math.cos(2*t), -Math.sin(3*t)] },
+      { id: "cicloide", start: 0, end: 4*Math.PI, steps: 420, duration: 8500, scale: 43, axes: { x: [[-.5,0,0],[7,0,0]], y: [[0,-1.2,0],[0,1.2,0]], z: [[0,0,-.5],[0,0,2.8]] }, pointAt: t => [.5*(t-Math.sin(t)), 0, .5*(1-Math.cos(t))] },
+      { id: "catenaria", start: -1.5, end: 1.5, steps: 260, duration: 6000, scale: 76, axes: { x: [[-2,0,0],[2,0,0]], y: [[0,-1.5,0],[0,1.5,0]], z: [[0,0,-.3],[0,0,2.8]] }, pointAt: t => [t,0,Math.cosh(t)] },
+      { id: "lissajous", start: 0, end: tau, steps: 420, duration: 7500, scale: 82, axes: axis(1.5,1.5,1.5), pointAt: t => [Math.sin(3*t),Math.sin(4*t),Math.sin(5*t)] }
+    ];
+    curves.forEach(createCurve);
+  </script>
+</body>
+</html>

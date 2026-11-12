@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meu Blog de Matemática</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      font-family: "Segoe UI", Arial, sans-serif;
+      color: #e8f1ff;
+      background: #071a35;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      background:
+        radial-gradient(ellipse at 15% 0%, #123568 0, transparent 45%),
+        linear-gradient(145deg, #071a35, #0a2347 60%, #071a35);
+      line-height: 1.6;
+    }
+
+    .math-background {
+      position: fixed;
+      z-index: 0;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+      color: #75a9ed;
+      opacity: 0.48;
+      user-select: none;
+    }
+
+    .math-background span {
+      position: absolute;
+      white-space: nowrap;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(1rem, 2vw, 1.8rem);
+    }
+
+    .formula-one {
+      top: 16%;
+      left: 5%;
+      transform: rotate(-12deg);
+    }
+
+    .formula-two {
+      top: 31%;
+      right: 4%;
+      transform: rotate(9deg);
+    }
+
+    .formula-three {
+      bottom: 24%;
+      left: 8%;
+      transform: rotate(7deg);
+    }
+
+    .math-background .formula-four {
+      right: 8%;
+      bottom: 9%;
+      transform: rotate(-8deg);
+      font-size: clamp(0.7rem, 1.2vw, 1.15rem);
+    }
+
+    body > h1,
+    body > p,
+    header,
+    nav,
+    main,
+    footer {
+      position: relative;
+      z-index: 1;
+    }
+
+    body > h1,
+    body > p,
+    header,
+    nav,
+    main,
+    footer {
+      width: min(900px, calc(100% - 2rem));
+      margin-right: auto;
+      margin-left: auto;
+    }
+
+    body > h1 {
+      margin-top: 3rem;
+      margin-bottom: 0.5rem;
+      color: #f4f8ff;
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      line-height: 1.15;
+    }
+
+    body > p {
+      margin-top: 0;
+      margin-bottom: 2rem;
+      color: #bdd0ec;
+    }
+
+    header {
+      padding: 1rem 1.5rem;
+      border: 1px solid #456ca4;
+      border-radius: 14px 14px 0 0;
+      background: #102d56;
+      color: #c5dcff;
+      font-size: 1.1rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+    }
+
+    header p {
+      margin: 0;
+    }
+
+    nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      padding: 0.75rem 1rem;
+      border-right: 1px solid #456ca4;
+      border-left: 1px solid #456ca4;
+      background: #0c2446;
+    }
+
+    nav a {
+      padding: 0.45rem 0.75rem;
+      border-radius: 7px;
+      color: #c9ddfa;
+      text-decoration: none;
+    }
+
+    nav a:hover,
+    nav a:focus-visible {
+      outline: none;
+      background: #1b4070;
+      color: #fff;
+    }
+
+    main {
+      padding: 0.5rem 1.5rem 1.25rem;
+      border: 1px solid #456ca4;
+      border-top: 0;
+      border-radius: 0 0 14px 14px;
+      background: rgb(9 29 57 / 76%);
+    }
+
+    section {
+      padding: 1rem 0;
+      border-bottom: 1px solid rgb(117 169 237 / 20%);
+    }
+
+    section:last-child {
+      border-bottom: 0;
+    }
+
+    h2 {
+      margin: 0 0 0.35rem;
+      color: #a9ccff;
+      font-size: 1.35rem;
+    }
+
+    section p {
+      margin: 0;
+      color: #d1def1;
+    }
+
+    .topicos {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 0.9rem;
+      margin-top: 0.9rem;
+    }
+
+    .topico {
+      padding: 1rem 1.1rem;
+      border: 1px solid #456ca4;
+      border-radius: 10px;
+      background: #0c2446;
+    }
+
+    .topico h3 {
+      margin: 0 0 0.3rem;
+      color: #c5dcff;
+      font-size: 1.05rem;
+    }
+
+    .topico h3 a {
+      color: inherit;
+      text-decoration: none;
+      border-bottom: 1px dashed #75a9ed;
+    }
+
+    .topico h3 a:hover,
+    .topico h3 a:focus-visible {
+      color: #fff;
+      border-bottom-style: solid;
+      outline: none;
+    }
+
+    .topico p {
+      margin: 0 0 0.6rem;
+      font-size: 0.95rem;
+    }
+
+    .topico .status {
+      display: inline-block;
+      padding: 0.15rem 0.55rem;
+      border-radius: 999px;
+      background: #1b4070;
+      color: #c9ddfa;
+      font-size: 0.8rem;
+    }
+
+    .visualizacao-destaque {
+      margin: 1rem 0;
+      padding: 1rem 1.1rem;
+      border: 1px solid #6389ba;
+      border-radius: 10px;
+      background: linear-gradient(120deg, #102d56, #0c2446);
+    }
+
+    .visualizacao-destaque h2 {
+      margin: 0;
+    }
+
+    .visualizacao-destaque h2 a {
+      color: #c5dcff;
+      text-decoration: none;
+    }
+
+    .visualizacao-destaque h2 a:hover,
+    .visualizacao-destaque h2 a:focus-visible {
+      color: #fff;
+    }
+
+    .visualizacao-destaque h2 a:focus-visible {
+      outline: 2px solid #75a9ed;
+      outline-offset: 4px;
+      border-radius: 2px;
+    }
+
+    footer {
+      padding: 1.5rem 0 2rem;
+      color: #9bb4d7;
+      text-align: center;
+    }
+
+    footer p {
+      margin: 0;
+    }
+
+    @media (max-width: 600px) {
+      body > h1 {
+        margin-top: 2rem;
+      }
+
+      main {
+        padding-right: 1rem;
+        padding-left: 1rem;
+      }
+
+      .math-background {
+        opacity: 0.28;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="math-background" aria-hidden="true">
+    <span class="formula-one">ds² = gᵢⱼ dxⁱ dxʲ</span>
+    <span class="formula-two">K = det(II) / det(I)</span>
+    <span class="formula-three">∇ᵢYʲ = ∂ᵢYʲ + ΓʲᵢₖYᵏ</span>
+    <span class="formula-four">R(X, Y)Z = ∇ₓ∇ᵧZ − ∇ᵧ∇ₓZ − ∇_[X,Y] Z</span>
+  </div>
+
+  <h1>Visualização em Geometria Diferencial</h1>
+//
+   <header>
+    <p>Uma Jornada pela Matemática</p>
+   </header>
+
+   <main>
+        <section id="sobre">
+            <h2>Sobre o Projeto</h2>
+            <p>Este projeto nasceu da minha iniciação científica em Geometria Diferencial, área da matemática que usa ferramentas do cálculo e da álgebra linear para estudar curvas e superfícies. Ao longo da pesquisa, estudei curvas regulares, o triedro de Frenet, a desigualdade isoperimétrica e superfícies regulares, e este blog reúne o que aprendi em cada etapa.
+Aqui você encontra um diário de estudos, demonstrações de teoremas, visualizações gráficas e as referências que me guiaram. Meu objetivo é registrar o caminho com clareza, e não apenas os resultados finais, e ao mesmo tempo construir um portfólio do meu percurso como futuro pesquisador. Como o blog é um trabalho em andamento, o conteúdo vai crescer conforme a pesquisa avançar.</p>
+        </section>
+
+        <section id="topicos">
+            <h2>Tópicos apresentados</h2>
+            <p>Os assuntos que estudei e apresentei ao longo da iniciação científica.</p>
+
+            <div class="topicos">
+                <article class="topico" id="curvas-regulares">
+                    <h3><a href="Curvas_regulares_minhas_notas-1.pdf">1. Curvas Regulares</a></h3>
+                    <p>Definição, parametrização por comprimento de arco e curvatura.</p>
+                </article>
+
+          
+
+                <article class="topico" id="isoperimetrica">
+                    <h3><a href="Desigualdade_Isoperimetrica.pdf">2. Desigualdade Isoperimétrica</a></h3>
+                    <p>Relação entre o comprimento de uma curva fechada simples e a área que ela envolve.</p>
+                </article>
+
+                <article class="topico" id="superficies-regulares">
+                    <h3>3. Superfícies Regulares</h3>
+                    <p>Parametrizações, plano tangente e primeira forma fundamental.</p>
+                </article>
+            </div>
+        </section>
+
+        <section id="visualizacao-geometrica" class="visualizacao-destaque">
+            <h2><a href="visualizacao-geometrica.html">Visualização Geométrica</a></h2>
+        </section>
+
+       
+    </main>
+
+<footer>
+    <p>Blog de Iniciação Científica</p>
+</footer>
+</body>
+</html>

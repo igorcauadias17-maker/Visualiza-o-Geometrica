@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Acesse conteúdos de construções de curvas e superfícies em R³.">
+  <title>Visualização Geométrica | Geometria Diferencial</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      font-family: "Segoe UI", Arial, sans-serif;
+      color: #e8f1ff;
+      background: #071a35;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      background:
+        radial-gradient(ellipse at 15% 0%, #123568 0, transparent 45%),
+        linear-gradient(145deg, #071a35, #0a2347 60%, #071a35);
+      line-height: 1.6;
+    }
+
+    main {
+      width: min(900px, calc(100% - 2rem));
+      margin: 0 auto;
+      padding: 2rem 0 3rem;
+    }
+
+    .voltar {
+      display: inline-block;
+      margin-bottom: 1.2rem;
+      color: #c9ddfa;
+      text-underline-offset: 3px;
+    }
+
+    h1 {
+      margin: 0;
+      color: #f4f8ff;
+      font-size: clamp(2rem, 5vw, 3rem);
+      line-height: 1.15;
+    }
+
+    .introducao {
+      margin: 0.8rem 0 1.5rem;
+      color: #bdd0ec;
+    }
+
+    .secoes {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1rem;
+    }
+
+    .secao {
+      padding: 1.2rem;
+      border: 1px solid #456ca4;
+      border-radius: 12px;
+      background: rgb(9 29 57 / 85%);
+    }
+
+    .secao h2 {
+      margin: 0;
+      font-size: 1.25rem;
+    }
+
+    .secao a {
+      color: #a9ccff;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 4px;
+    }
+
+    .secao a:hover,
+    .secao a:focus-visible {
+      color: #fff;
+    }
+
+    .secao a:focus-visible,
+    .voltar:focus-visible {
+      outline: 2px solid #75a9ed;
+      outline-offset: 4px;
+      border-radius: 2px;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <a class="voltar" href="index.html">← Voltar ao blog</a>
+    <h1>Visualização Geométrica</h1>
+    <p class="introducao">Explore as construções geométricas em R<sup>3</sup>.</p>
+
+    <div class="secoes">
+      <section class="secao" id="construcoes-curvas">
+        <h2><a href="construcoes-curvas.html">Construções de Curvas em R<sup>3</sup></a></h2>
+      </section>
+      <section class="secao" id="construcoes-superficies">
+        <h2><a href="construcoes-superficies.html">Construções de Superfícies em R<sup>3</sup></a></h2>
+      </section>
+      <section class="secao" id="Laboratório de Curvas">
+        <h2><a href="curvas-frenet.html">Laboratório de Curvas em R<sup>3</sup></a></h2>
+      </section>
+    </div>
+  </main>
+</body>
+</html>

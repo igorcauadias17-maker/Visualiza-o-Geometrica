@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Curvas Regulares</title>
+
+<!-- MathJax: renderiza as fórmulas LaTeX -->
+<script>
+  window.MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']],
+      displayMath: [['$$', '$$'], ['\\[', '\\]']],
+      tags: 'none'
+    }
+  };
+</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+<style>
+  :root { --fg:#1d1d1f; --bg:#fdfdfc; --muted:#5c5c60; --accent:#1f4e8c; --box:#f1f4f9; --line:#d9dde4; }
+  @media (prefers-color-scheme: dark) {
+    :root { --fg:#e8e8ea; --bg:#17181b; --muted:#a0a3aa; --accent:#8db6ff; --box:#20232a; --line:#34373f; }
+  }
+  body { margin:0; background:var(--bg); color:var(--fg); font-family:Georgia,"Times New Roman",serif; line-height:1.7; }
+  article { max-width:820px; margin:0 auto; padding:32px 20px 64px; }
+  h1 { text-align:center; margin-bottom:4px; }
+  .subtitulo { text-align:center; color:var(--muted); margin-bottom:36px; }
+  h2 { margin-top:2.4em; border-bottom:1px solid var(--line); padding-bottom:4px; }
+  h4 { margin:1.6em 0 0.4em; }
+  .bloco { margin:1.2em 0; padding:12px 16px; border-left:4px solid var(--accent); background:var(--box); border-radius:0 6px 6px 0; }
+  .bloco .titulo { font-weight:bold; color:var(--accent); }
+  .teorema, .proposicao { font-style:italic; }
+  .teorema .titulo, .proposicao .titulo { font-style:normal; }
+  .definicao, .exemplo { font-style:normal; }
+  .observacao { border-left-color:var(--muted); }
+  .prova { margin:0.8em 0 1.4em 16px; }
+  .prova .rotulo { font-style:italic; }
+  .qed { float:right; }
+  mjx-container[display="true"] { overflow-x:auto; overflow-y:hidden; }
+  ul, ol { padding-left:1.4em; }
+</style>
+</head>
+<body>
+<article>
+
+<h1>Curvas Regulares</h1>
+<p class="subtitulo">Notas baseadas em <em>Geometria Diferencial de Curvas e Superfícies</em>, de M. P. do Carmo</p>
+
+<!-- ===================== SEÇÃO 1 ===================== -->
+<h2>1. Curvas parametrizadas diferenciáveis</h2>
+
+<div class="bloco definicao">
+<span class="titulo">Definição 1.1.</span>
+Uma <em>curva parametrizada diferenciável</em> é uma aplicação diferenciável (de classe $C^\infty$) $\alpha\colon I\to\mathbb{R}^3$ de um intervalo aberto $I\subset\mathbb{R}$ em $\mathbb{R}^3$. A variável $t\in I$ é o <em>parâmetro</em> da curva, e o conjunto $\alpha(I)\subset\mathbb{R}^3$ é o <em>traço</em> de $\alpha$.
+</div>
+
+<p>Escrevendo $\alpha(t)=(x(t),y(t),z(t))$, dizer que $\alpha$ é diferenciável significa que as funções $x,y,z$ têm derivadas de todas as ordens em $I$. O <em>vetor tangente</em> (ou vetor velocidade) de $\alpha$ em $t$ é
+$$\alpha'(t)=(x'(t),y'(t),z'(t)).$$</p>
+
+<div class="bloco exemplo">
+<span class="titulo">Exemplo 1.2 (Parábola e hélice).</span>
+<ol>
+  <li>$\alpha(t)=(t,t^2)$ é uma curva plana cujo traço é a parábola $y=x^2$.</li>
+  <li>$\alpha(t)=(a\cos t,\,a\sin t,\,bt)$, com $a>0$ e $b\neq 0$, é a <em>hélice circular</em>; seu traço está sobre o cilindro $x^2+y^2=a^2$.</li>
+</ol>
+</div>
+
+<div class="bloco exemplo">
+<span class="titulo">Exemplo 1.3 (O traço não basta).</span>
+As curvas $\alpha(t)=(t^3,t^2)$, $t\in\mathbb{R}$, e $\beta(t)=(t,\,t^{2/3})$, $t\in\mathbb{R}$, têm o mesmo traço, mas $\alpha'(0)=(0,0)$: o traço de $\alpha$ tem uma “ponta” (cúspide) em $t=0$, e o vetor tangente é nulo ali. Isto motiva a definição seguinte.
+</div>
+
+<div class="bloco definicao">
+<span class="titulo">Definição 1.4.</span>
+Uma curva parametrizada diferenciável $\alpha\colon I\to\mathbb{R}^3$ é dita <em>regular</em> se $\alpha'(t)\neq 0$ para todo $t\in I$. Um ponto $t$ em que $\alpha'(t)=0$ é chamado <em>ponto singular</em> de $\alpha$.
+</div>
+
+<p>Para uma curva regular, a reta tangente em $t_0$ está bem definida: é a reta que passa por $\alpha(t_0)$ com direção $\alpha'(t_0)$.</p>
+
+<!-- ===================== SEÇÃO 2 ===================== -->
+<h2>2. Comprimento de arco</h2>
+
+<div class="bloco definicao">
+<span class="titulo">Definição 2.1.</span>
+Seja $\alpha\colon I\to\mathbb{R}^3$ uma curva parametrizada regular e $t_0\in I$. O <em>comprimento de arco</em> de $\alpha$ a partir de $t_0$ é
+$$s(t)=\int_{t_0}^{t}\left|\alpha'(u)\right|\,du .$$
+</div>
+
+<p>Como $\alpha'(t)\neq0$, a função $s$ é diferenciável e $s'(t)=\left|\alpha'(t)\right|>0$. Logo $s$ é estritamente crescente e, pelo teorema da função inversa, admite uma inversa diferenciável $t=t(s)$.</p>
+
+<div class="bloco definicao">
+<span class="titulo">Definição 2.2.</span>
+Dizemos que $\alpha$ está <em>parametrizada pelo comprimento de arco</em> se $\left|\alpha'(s)\right|=1$ para todo $s$.
+</div>
+
+<div class="bloco proposicao">
+<span class="titulo">Proposição 2.3.</span>
+Toda curva regular $\alpha\colon I\to\mathbb{R}^3$ admite uma reparametrização $\beta(s)=\alpha(t(s))$ por comprimento de arco.
+</div>
+<div class="prova">
+<span class="rotulo">Demonstração.</span>
+Seja $s=s(t)$ como acima e $t=t(s)$ sua inversa. Pela regra da cadeia,
+$$\beta'(s)=\alpha'(t(s))\,t'(s)=\frac{\alpha'(t(s))}{s'(t(s))}=\frac{\alpha'(t(s))}{\left|\alpha'(t(s))\right|},$$
+que tem norma $1$. <span class="qed">∎</span>
+</div>
+
+<div class="bloco observacao">
+<span class="titulo">Observação.</span>
+A partir daqui, salvo menção em contrário, supomos a curva parametrizada pelo comprimento de arco $s$ e denotamos por $'$ a derivada em relação a $s$. Isto não restringe a teoria, pois qualquer curva regular pode ser reparametrizada dessa forma.
+</div>
+
+<div class="bloco exemplo">
+<span class="titulo">Exemplo 2.4.</span>
+A hélice $\alpha(t)=(a\cos t,a\sin t,bt)$ tem $\left|\alpha'(t)\right|=\sqrt{a^2+b^2}=:c$. Logo $s=ct$ e
+$$\beta(s)=\Bigl(a\cos\tfrac{s}{c},\;a\sin\tfrac{s}{c},\;\tfrac{bs}{c}\Bigr)$$
+está parametrizada pelo comprimento de arco.
+</div>
+
+<!-- ===================== SEÇÃO 3 ===================== -->
+<h2>3. Curvatura</h2>
+
+<p>Seja $\alpha\colon I\to\mathbb{R}^3$ parametrizada pelo comprimento de arco. Então $\alpha'(s)$ é um vetor unitário, que denotamos por $t(s)$.</p>
+
+<div class="bloco definicao">
+<span class="titulo">Definição 3.1.</span>
+A <em>curvatura</em> de $\alpha$ em $s$ é
+$$k(s)=\left|\alpha''(s)\right|=\left|t'(s)\right|.$$
+</div>
+
+<p>Como $\langle t,t\rangle=1$, derivando obtemos $\langle t',t\rangle=0$: o vetor $\alpha''(s)$ é ortogonal ao vetor tangente. A curvatura mede, portanto, a rapidez com que a direção da tangente varia.</p>
+
+<div class="bloco proposicao">
+<span class="titulo">Proposição 3.2.</span>
+Uma curva regular tem curvatura identicamente nula se, e somente se, seu traço está contido em uma reta.
+</div>
+<div class="prova">
+<span class="rotulo">Demonstração.</span>
+Se $k\equiv0$, então $\alpha''\equiv0$ e, integrando, $\alpha(s)=us+v$ com $u,v\in\mathbb{R}^3$ constantes (e $u\neq0$, pois $\left|\alpha'\right|=1$): uma reta. Reciprocamente, se $\alpha(s)=us+v$, então $\alpha''=0$. <span class="qed">∎</span>
+</div>
+
+<h4>Fórmula para parâmetro qualquer.</h4>
+<p>Se $\alpha$ é uma curva regular com parâmetro arbitrário $t$, então
+$$k(t)=\frac{\left|\alpha'(t)\wedge\alpha''(t)\right|}{\left|\alpha'(t)\right|^{3}}.$$</p>
+
+<div class="bloco exemplo">
+<span class="titulo">Exemplo 3.3.</span>
+Na hélice parametrizada por $s$, temos $\alpha''(s)=\bigl(-\tfrac{a}{c^2}\cos\tfrac sc,\,-\tfrac{a}{c^2}\sin\tfrac sc,\,0\bigr)$, de modo que
+$$k=\frac{a}{c^2}=\frac{a}{a^2+b^2},$$
+constante. Em particular, para $b=0$ (círculo de raio $a$) obtemos $k=1/a$.
+</div>
+
+<!-- ===================== SEÇÃO 4 ===================== -->
+<h2>4. O triedro de Frenet</h2>
+
+<p>Seja $\alpha$ parametrizada pelo comprimento de arco com $k(s)\neq0$ para todo $s$.</p>
+
+<div class="bloco definicao">
+<span class="titulo">Definição 4.1.</span>
+Definimos:
+<ul>
+  <li>o <em>vetor tangente unitário</em> $t(s)=\alpha'(s)$;</li>
+  <li>o <em>vetor normal</em> $n(s)=\dfrac{\alpha''(s)}{k(s)}$, de modo que $t'(s)=k(s)\,n(s)$;</li>
+  <li>o <em>vetor binormal</em> $b(s)=t(s)\wedge n(s)$.</li>
+</ul>
+O plano gerado por $t$ e $n$ é o <em>plano osculador</em>.
+</div>
+
+<p>Os vetores $t(s),n(s),b(s)$ formam uma base ortonormal positiva de $\mathbb{R}^3$ para cada $s$, chamada <em>triedro de Frenet</em>.</p>
+
+<p>Derivando $b=t\wedge n$,
+$$b'=t'\wedge n+t\wedge n'=k\,n\wedge n+t\wedge n'=t\wedge n'.$$
+Logo $b'$ é ortogonal a $t$; como $\langle b,b\rangle=1$, também é ortogonal a $b$. Portanto $b'$ é paralelo a $n$.</p>
+
+<div class="bloco definicao">
+<span class="titulo">Definição 4.2.</span>
+A <em>torção</em> $\tau(s)$ é definida por
+$$b'(s)=\tau(s)\,n(s).$$
+</div>
+
+<div class="bloco observacao">
+<span class="titulo">Observação.</span>
+Esta é a convenção de do Carmo. Alguns autores definem $b'=-\tau n$, o que inverte o sinal da torção.
+</div>
+
+<div class="bloco teorema">
+<span class="titulo">Teorema 4.3 (Fórmulas de Frenet).</span>
+Com a convenção acima, valem
+$$\begin{aligned}
+t' &= k\,n,\\
+n' &= -k\,t-\tau\,b,\\
+b' &= \tau\,n.
+\end{aligned}$$
+</div>
+<div class="prova">
+<span class="rotulo">Demonstração.</span>
+A primeira e a terceira são as definições de $n$ e de $\tau$. Para a segunda, como $n=b\wedge t$,
+$$n'=b'\wedge t+b\wedge t'=\tau\,n\wedge t+k\,b\wedge n=-\tau\,b-k\,t. \qquad ∎$$
+</div>
+
+<div class="bloco proposicao">
+<span class="titulo">Proposição 4.4.</span>
+Seja $\alpha$ uma curva com $k(s)\neq0$ para todo $s$. Então $\tau\equiv0$ se, e somente se, $\alpha$ é uma curva plana.
+</div>
+<div class="prova">
+<span class="rotulo">Demonstração.</span>
+Se $\tau\equiv0$, então $b'\equiv0$, logo $b=b_0$ é constante. Como $\langle\alpha',b_0\rangle=\langle t,b\rangle=0$, a função $\langle\alpha(s),b_0\rangle$ é constante, ou seja, $\alpha$ está contida em um plano ortogonal a $b_0$. Reciprocamente, se $\alpha$ está num plano, $t$ e $n$ são paralelos a esse plano, então $b$ é um vetor normal ao plano, constante a menos de sinal; como $b$ é contínuo, é constante e $\tau=0$. <span class="qed">∎</span>
+</div>
+
+<p>A torção mede, assim, o quanto a curva se afasta de ser plana: ela é a taxa de variação do plano osculador.</p>
+
+<h4>Fórmula para parâmetro qualquer.</h4>
+<p>Para $\alpha$ regular com parâmetro $t$ e $k\neq0$,
+$$\tau(t)=-\frac{\bigl(\alpha'(t)\wedge\alpha''(t)\bigr)\cdot\alpha'''(t)}{\left|\alpha'(t)\wedge\alpha''(t)\right|^{2}}.$$</p>
+
+<div class="bloco exemplo">
+<span class="titulo">Exemplo 4.5 (Torção da hélice).</span>
+Para a hélice $\beta(s)$ do Exemplo 2.4, com $S=\sin(s/c)$ e $C=\cos(s/c)$:
+$$\begin{aligned}
+t&=\Bigl(-\tfrac ac S,\;\tfrac ac C,\;\tfrac bc\Bigr), & n&=(-C,\,-S,\,0),\\
+b&=t\wedge n=\Bigl(\tfrac bc S,\;-\tfrac bc C,\;\tfrac ac\Bigr).
+\end{aligned}$$
+Derivando, $b'=\bigl(\tfrac{b}{c^2}C,\ \tfrac{b}{c^2}S,\ 0\bigr)=-\tfrac{b}{c^2}\,n$, e portanto
+$$\tau=-\frac{b}{c^2}=-\frac{b}{a^2+b^2}.$$
+Curvatura e torção são constantes: a hélice circular é uma curva de “curvatura e torção constantes”.
+</div>
+
+<!-- ===================== SEÇÃO 5 ===================== -->
+<h2>5. O teorema fundamental da teoria local das curvas</h2>
+
+<p>Vimos que a curvatura e a torção são invariantes sob movimentos rígidos do espaço (translações e rotações): se $\bar\alpha=A\alpha+p$ com $A$ ortogonal de determinante $1$, então $\bar\alpha$ tem as mesmas $k$ e $\tau$. O teorema abaixo mostra que elas determinam a curva a menos de tais movimentos.</p>
+
+<div class="bloco teorema">
+<span class="titulo">Teorema 5.1 (Teorema fundamental das curvas).</span>
+Dadas funções diferenciáveis $k(s)>0$ e $\tau(s)$, $s\in I$, existe uma curva regular parametrizada $\alpha\colon I\to\mathbb{R}^3$ tal que $s$ é o comprimento de arco, $k(s)$ é a curvatura e $\tau(s)$ é a torção de $\alpha$. Além disso, qualquer outra curva $\bar\alpha$ com as mesmas propriedades difere de $\alpha$ por um movimento rígido, isto é, existem uma rotação $A$ e um vetor $p$ tais que $\bar\alpha=A\alpha+p$.
+</div>
+<div class="prova">
+<span class="rotulo">Esboço da demonstração.</span><br>
+<em>Existência.</em> O sistema de equações lineares
+$$t'=k\,n,\qquad n'=-k\,t-\tau\,b,\qquad b'=\tau\,n$$
+(nove equações escalares nas componentes de $t,n,b$) com condições iniciais $t(s_0),n(s_0),b(s_0)$ formando uma base ortonormal positiva de $\mathbb{R}^3$ possui solução única em $I$. Mostra-se que $\{t,n,b\}$ permanece ortonormal positivo: as quantidades $\langle t,t\rangle,\langle n,n\rangle,\langle b,b\rangle,\langle t,n\rangle,\langle t,b\rangle,\langle n,b\rangle$ satisfazem um sistema linear homogêneo cuja solução com as condições iniciais corretas é a constante (por unicidade). Define-se então $\alpha(s)=\int_{s_0}^s t(u)\,du$.
+<br><br>
+<em>Unicidade.</em> Se $\bar\alpha$ tem as mesmas $k,\tau$, existe um movimento rígido que leva o triedro $\{\bar t,\bar n,\bar b\}(s_0)$ em $\{t,n,b\}(s_0)$ e $\bar\alpha(s_0)$ em $\alpha(s_0)$. Após esse movimento, ambos os triedros satisfazem as mesmas equações de Frenet com as mesmas condições iniciais, logo coincidem por unicidade das soluções de EDOs lineares, e portanto $\bar\alpha=\alpha$. <span class="qed">∎</span>
+</div>
+
+<h2>Referências</h2>
+<ol>
+  <li>M. P. do Carmo, <em>Geometria Diferencial de Curvas e Superfícies</em>, Coleção Textos Universitários, SBM, Capítulo 1.</li>
+</ol>
+
+</article>
+</body>
+</html>
